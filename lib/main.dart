@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quizler/quiz_brain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 QUizBrain quizBrain = QUizBrain();
 
@@ -38,16 +39,41 @@ class _QuizPageState extends State<QuizPage> {
   void checkAnswer(bool userPickedAnswer) {
     bool correctAnswer = quizBrain.getQuestionAnswer();
 
-    if (userPickedAnswer == correctAnswer) {
-      scoreKeeper.add(const Icon(
-        Icons.check,
-        color: Colors.green,
-      ));
+    if (quizBrain.isQuizFinished()) {
+      Alert(
+        context: context,
+        type: AlertType.warning,
+        title: "Quizler",
+        desc: "Quizler is finished. Reset the quizler",
+        buttons: [
+          DialogButton(
+            onPressed: () {
+              Navigator.pop(context);
+              setState(() {
+                scoreKeeper.clear();
+                quizBrain.resetQuizler();
+              });
+            },
+            color: const Color.fromRGBO(0, 179, 134, 1.0),
+            child: const Text(
+              "RESET",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+          ),
+        ],
+      ).show();
     } else {
-      scoreKeeper.add(const Icon(
-        Icons.close,
-        color: Colors.red,
-      ));
+      if (userPickedAnswer == correctAnswer) {
+        scoreKeeper.add(const Icon(
+          Icons.check,
+          color: Colors.green,
+        ));
+      } else {
+        scoreKeeper.add(const Icon(
+          Icons.close,
+          color: Colors.red,
+        ));
+      }
     }
 
     setState(() {
